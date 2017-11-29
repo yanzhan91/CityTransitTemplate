@@ -1,15 +1,16 @@
-from flask import Flask, render_template
+import json
+import logging as log
+import re
+
+from flask import Flask, render_template, request as req
 from flask_ask import Ask, statement, question, context, request
 
-import re
-import json
-import os
+from intents import CheckIntent
+from intents import GetIntent
+from intents import SetIntent
 
-import CheckIntent
-import SetIntent
-import GetIntent
+from Constants import city_constants
 
-import logging as log
 
 AGENCY = 'agency'
 STOP = 'stop'
@@ -22,11 +23,12 @@ ask = Ask(app, '/')
 
 @ask.launch
 def launch():
-    city = os.environ['city']
-    example_agency = os.environ['example_agency']
-    example_route = os.environ['example_route']
-    example_stop = os.environ['example_stop']
-    agencies, num_agencies = generate_agencies()
+    city = req.args.get('city')
+
+    example_agency = city_constants[city]['example_agency']
+    example_route = city_constants[city]['example_route']
+    example_stop = city_constants[city]['example_stop']
+    agencies, num_agencies = generate_agencies(city)
     welcome_text = render_template('welcome', city=city, num_agencies=num_agencies, agencies=agencies,
                                    agency=example_agency, route=example_route, stop=example_stop)
     return question(welcome_text)\
@@ -36,11 +38,12 @@ def launch():
 
 @ask.intent('AMAZON.HelpIntent')
 def help_intent():
-    city = os.environ['city']
-    example_agency = os.environ['example_agency']
-    example_route = os.environ['example_route']
-    example_stop = os.environ['example_stop']
-    website = os.environ['website']
+    city = req.args.get('city')
+
+    example_agency = city_constants[city]['example_agency']
+    example_route = city_constants[city]['example_route']
+    example_stop = city_constants[city]['example_stop']
+    website = city_constants[city]['website']
     help_text = render_template('help', city=city, agency=example_agency, route=example_route, stop=example_stop)
     help_card = render_template('help_card', agency=example_agency, route=example_route, stop=example_stop,
                                 website=website)
@@ -59,6 +62,8 @@ def cancel_intent():
 
 @ask.intent('CheckIntent')
 def check_intent(route, stop, agency):
+    city = req.args.get('city')
+
     log.info('Request object = %s' % request)
     if request['dialogState'] != 'COMPLETED':
         return delegate_dialog()
@@ -71,13 +76,15 @@ def check_intent(route, stop, agency):
         stop = param_map[STOP]
         agency = param_map[AGENCY]
 
-    message = CheckIntent.check(route, stop, ('%s-%s' % (os.environ['city'].lower(), agency)).replace(' ', '-'))
+    message = CheckIntent.check(route, stop, ('%s-%s' % (city, agency)).replace(' ', '-'))
     log.info('Response message = %s', message)
     return generate_statement_card(message, 'Check Status')
 
 
 @ask.intent('SetIntent')
 def set_intent(route, stop, preset, agency):
+    city = req.args.get('city')
+
     log.info('Request object = %s' % request)
     if request['dialogState'] != 'COMPLETED':
         return delegate_dialog()
@@ -94,13 +101,15 @@ def set_intent(route, stop, preset, agency):
         agency = param_map[AGENCY]
     
     message = SetIntent.add(context.System.user.userId, route, stop, preset,
-                            ('%s-%s' % (os.environ['city'].lower(), agency)).replace(' ', '-'))
+                            ('%s-%s' % (city, agency)).replace(' ', '-'))
     log.info('Response message = %s', message)
     return generate_statement_card(message, 'Set Status')
 
 
 @ask.intent('GetIntent')
 def get_intent(preset, agency):
+    city = req.args.get('city')
+
     log.info('Request object = %s' % request)
     if request['dialogState'] != 'COMPLETED':
         return delegate_dialog()
@@ -116,7 +125,7 @@ def get_intent(preset, agency):
         agency = param_map[AGENCY]
 
     message = GetIntent.get(context.System.user.userId, preset,
-                            ('%s-%s' % (os.environ['city'].lower(), agency)).replace(' ', '-'))
+                            ('%s-%s' % (city, agency)).replace(' ', '-'))
     log.info('Response message = %s', message)
     return generate_statement_card(message, 'Get Status')
 
@@ -129,19 +138,12 @@ def remove_html(text):
     return re.sub('<[^<]*?>|\\n', '', text)
 
 
-def generate_agencies():
-    agencies = os.environ['agencies'].split(',')
-    num_agencies = len(agencies)
-
-    if num_agencies == 1:
-        return agencies[0], num_agencies
-    elif num_agencies == 2:
-        return ' and '.join(agencies), num_agencies
-    else:
-        last_agency = agencies[-1]
-        del agencies[-1]
-        agencies_string = '%s and %s' % (', '.join(agencies), last_agency)
-        return agencies_string, num_agencies
+def generate_agencies(city):
+    agencies = city_constants[city]['agencies']
+    length = len(agencies.split(','))
+    if 'and' in agencies:
+        length += 1
+    return agencies, length
 
 
 def delegate_dialog():
@@ -224,10 +226,4 @@ def find_parameter_resolutions(param):
 
 if __name__ == '__main__':
     app.config['ASK_VERIFY_REQUESTS'] = False
-
-    json_data = open('zappa_settings.json')
-    env_vars = json.load(json_data)['dev']['environment_variables']
-    for key, val in env_vars.items():
-        os.environ[key] = val
-
     app.run()

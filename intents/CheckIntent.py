@@ -1,7 +1,7 @@
 from flask import render_template
+from Constants import city_constants
 import logging as log
 import requests
-import os
 
 
 def check(route, stop, agency):
@@ -42,4 +42,4 @@ def __get_response(route, stop, agency):
         'stop': stop,
         'agency': agency
     }
-    return requests.get('%s/check' % os.environ['transit_api_url'], params=parameters)
+    return requests.get('%s/check' % city_constants['transit_api_url'], params=parameters)

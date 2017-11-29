@@ -1,7 +1,7 @@
 from flask import render_template
+from Constants import city_constants
 import logging as log
 import requests
-import os
 
 
 def get(user, preset, agency):
@@ -49,4 +49,4 @@ def __get_response(user, preset, agency):
         'preset': preset,
         'agency': agency
     }
-    return requests.get('%s/get' % os.environ['transit_api_url'], params=parameters)
+    return requests.get('%s/get' % city_constants['transit_api_url'], params=parameters)
