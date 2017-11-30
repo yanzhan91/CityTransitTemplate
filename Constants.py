@@ -33,7 +33,7 @@ city_constants = {
         'website': 'metro.net'
     },
     'chicago': {
-        'city': 'Chicago',
+        'full_name': 'Chicago',
         'agencies': 'cta bus and cta train',
         'example_agency': 'cta bus',
         'example_route': '151',
