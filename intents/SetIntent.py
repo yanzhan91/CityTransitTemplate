@@ -22,4 +22,4 @@ def __get_response(user, route, stop, preset, city_agency):
         'preset': preset,
         'agency': city_agency
     }
-    return RestTemplate.get_response('add', parameters)
+    return RestTemplate.post_response('add', parameters)
