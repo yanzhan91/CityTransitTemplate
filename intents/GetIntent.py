@@ -1,16 +1,17 @@
 from flask import render_template
 from Constants import city_constants
+import RestTemplate
 import logging as log
-import requests
 
 
-def get(user, preset, agency):
-    log.info('User=%s, Preset=%s, Agency=%s', user, preset, agency)
-    response = __get_response(user, preset, agency)
+def get(user, preset, agency, city_full):
+    log.info('User=%s, Preset=%s, Agency=%s, City=%s', user, preset, agency, city_full)
+    city_agency = '%s-%s' % (city_full.lower().replace(' ', ''), agency.replace(' ', '-'))
+    response = __get_response(user, preset, city_agency)
     if response.status_code != 200:
         if response.json()['error_code'] == 10302:
             log.info(response.text)
-            return render_template('preset_not_found_message', preset=preset, agency=agency)
+            return render_template('preset_not_found_message', preset=preset, agency='%s %s' % (city_full, agency))
         else:
             log.error(response.text)
             return render_template('internal_error_message')
@@ -43,10 +44,10 @@ def get(user, preset, agency):
                            stop_name=stop_name)
 
 
-def __get_response(user, preset, agency):
+def __get_response(user, preset, city_agency):
     parameters = {
         'user': user,
         'preset': preset,
-        'agency': agency
+        'agency': city_agency
     }
-    return requests.get('%s/get' % city_constants['transit_api_url'], params=parameters)
+    return RestTemplate.get_response('get', parameters)

@@ -64,7 +64,11 @@ def cancel_intent():
 def check_intent(route, stop, agency):
     city = req.args.get('city')
 
+    log.info("city=%s" % city)
     log.info('Request object = %s' % request)
+
+    city_full = city_constants[city]['full_name']
+
     if request['dialogState'] != 'COMPLETED':
         return delegate_dialog()
 
@@ -76,7 +80,7 @@ def check_intent(route, stop, agency):
         stop = param_map[STOP]
         agency = param_map[AGENCY]
 
-    message = CheckIntent.check(route, stop, ('%s-%s' % (city, agency)).replace(' ', '-'))
+    message = CheckIntent.check(route, stop, agency, city_full)
     log.info('Response message = %s', message)
     return generate_statement_card(message, 'Check Status')
 
@@ -84,8 +88,13 @@ def check_intent(route, stop, agency):
 @ask.intent('SetIntent')
 def set_intent(route, stop, preset, agency):
     city = req.args.get('city')
+    user_id = context.System.user.userId
 
+    log.info("city=%s" % city)
     log.info('Request object = %s' % request)
+
+    city_full = city_constants[city]['full_name']
+
     if request['dialogState'] != 'COMPLETED':
         return delegate_dialog()
 
@@ -99,9 +108,8 @@ def set_intent(route, stop, preset, agency):
         stop = param_map[STOP]
         preset = param_map[PRESET]
         agency = param_map[AGENCY]
-    
-    message = SetIntent.add(context.System.user.userId, route, stop, preset,
-                            ('%s-%s' % (city, agency)).replace(' ', '-'))
+
+    message = SetIntent.add(user_id, route, stop, preset, agency, city_full)
     log.info('Response message = %s', message)
     return generate_statement_card(message, 'Set Status')
 
@@ -109,8 +117,13 @@ def set_intent(route, stop, preset, agency):
 @ask.intent('GetIntent')
 def get_intent(preset, agency):
     city = req.args.get('city')
+    user_id = context.System.user.userId
 
+    log.info("city=%s" % city)
     log.info('Request object = %s' % request)
+
+    city_full = city_constants[city]['full_name']
+
     if request['dialogState'] != 'COMPLETED':
         return delegate_dialog()
 
@@ -124,8 +137,8 @@ def get_intent(preset, agency):
         preset = param_map[PRESET]
         agency = param_map[AGENCY]
 
-    message = GetIntent.get(context.System.user.userId, preset,
-                            ('%s-%s' % (city, agency)).replace(' ', '-'))
+    # agency = ('%s-%s' % (city, agency)).replace(' ', '-')
+    message = GetIntent.get(user_id, preset, agency, city_full)
     log.info('Response message = %s', message)
     return generate_statement_card(message, 'Get Status')
 

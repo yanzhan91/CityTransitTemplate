@@ -1,7 +1,7 @@
 city_constants = {
-    'transit_api_url': 'https://0izohjr8ng.execute-api.us-east-2.amazonaws.com/dev',
+    'eztransit_url': 'https://0izohjr8ng.execute-api.us-east-2.amazonaws.com/dev',
     'austin': {
-        'city': 'Austin',
+        'full_name': 'Austin',
         'agencies': 'metro bus',
         'example_agency': 'metro bus',
         'example_route': '7',
@@ -9,7 +9,7 @@ city_constants = {
         'website': 'capmetro.org'
     },
     'sanfrancisco': {
-        'city': 'San Francisco',
+        'full_name': 'San Francisco',
         'agencies': 'muni bus',
         'example_agency': 'muni bus',
         'example_route': '5',
@@ -17,7 +17,7 @@ city_constants = {
         'website': 'sfmta.com'
     },
     'portland': {
-        'city': 'Portland',
+        'full_name': 'Portland',
         'agencies': 'tri met bus',
         'example_agency': 'tri met bus',
         'example_route': '9',
@@ -25,7 +25,7 @@ city_constants = {
         'website': 'trimet.org'
     },
     'losangeles': {
-        'city': 'Los Angeles',
+        'full_name': 'Los Angeles',
         'agencies': 'metro bus',
         'example_agency': 'metro bus',
         'example_route': '18',

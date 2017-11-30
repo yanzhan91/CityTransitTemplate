@@ -1,12 +1,12 @@
 from flask import render_template
-from Constants import city_constants
+import RestTemplate
 import logging as log
-import requests
 
 
-def check(route, stop, agency):
-    log.info('Route=%s, Stop=%s, Agency=%s', route, stop, agency)
-    response = __get_response(route, stop, agency)
+def check(route, stop, agency, city_full):
+    log.info('Route=%s, Stop=%s, Agency=%s, City=%s', route, stop, agency, city_full)
+    city_agency = '%s-%s' % (city_full.lower().replace(' ', ''), agency.replace(' ', '-'))
+    response = __get_response(route, stop, city_agency)
     if response.status_code != 200:
         log.error(response.text)
         return render_template('internal_error_message')
@@ -36,10 +36,10 @@ def check(route, stop, agency):
     return render_template('check_success_message', route=route, stop=stop, minutes=minute_string, stop_name=stop_name)
 
 
-def __get_response(route, stop, agency):
+def __get_response(route, stop, city_agency):
     parameters = {
         'route': route,
         'stop': stop,
-        'agency': agency
+        'agency': city_agency
     }
-    return requests.get('%s/check' % city_constants['transit_api_url'], params=parameters)
+    return RestTemplate.get_response('check', parameters)
