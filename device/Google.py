@@ -36,6 +36,12 @@ def get_default_params(city, request):
     log.info(request_json)
     result = request_json['result']
     original_request = request_json['originalRequest']
+
+    try:
+        log.info(original_request['data']['inputs'][0]['rawInputs'][0]['query'])
+    except Exception:
+        pass
+
     user = original_request['data']['user']['userId']
     intent = result['metadata']['intentName']
     param = result['parameters']
@@ -64,8 +70,7 @@ def __check(agency, city_full, param):
 def generate_response(message):
     return jsonify({
         "speech": remove_html(message),
-        "displayText": remove_html(message),
-        "source": "webhook"
+        "displayText": remove_html(message)
     })
 
 
