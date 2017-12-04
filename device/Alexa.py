@@ -128,7 +128,10 @@ def generate_agencies(city):
 
 
 def remove_html(text):
-    return re.sub('<[^<]*?>|\\n', '', text)
+    text = re.sub(r'<[^<]*?>', '', text)
+    text = re.sub(r'\\n', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
 
 
 def check_params(request, params_map):

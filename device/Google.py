@@ -75,4 +75,7 @@ def generate_response(message):
 
 
 def remove_html(text):
-    return re.sub(r'<[^<]*?>|\\n', '', text)
+    text = re.sub(r'<[^<]*?>', '', text)
+    text = re.sub(r'\\n', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
