@@ -39,5 +39,13 @@ city_constants = {
         'example_route': '151',
         'example_stop': '1108',
         'website': 'transitchicago.com'
+    },
+    'dc': {
+        'full_name': 'DC',
+        'agencies': 'metro bus',
+        'example_agency': 'metro bus',
+        'example_route': '70',
+        'example_stop': '1001195',
+        'website': 'wmata.com'
     }
 }
