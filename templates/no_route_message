@@ -1,0 +1,6 @@
+<speak>
+    There are currently no route {{route}} at stop
+    <say-as interpret-as="digits">{{stop}}</say-as>
+    <break time="100ms"/>
+    {{stop_name}}
+</speak>

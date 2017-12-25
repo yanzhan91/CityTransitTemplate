@@ -1,12 +1,10 @@
 from flask import Flask, request as flask_request
 from flask_ask import Ask, context, request as ask_request
 
-from device import Alexa
-from device import Google
+import Alexa
 
 app = Flask(__name__)
 ask = Ask(app, '/')
-app.config['ASK_VERIFY_REQUESTS'] = False
 
 
 @ask.launch
@@ -49,12 +47,6 @@ def get_intent(preset, agency):
     city = flask_request.args.get('city')
     user = context.System.user.userId
     return Alexa.get_intent(ask_request, city, user, preset, agency)
-
-
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    city = flask_request.args.get('city')
-    return Google.webhook(flask_request, city)
 
 if __name__ == '__main__':
     app.config['ASK_VERIFY_REQUESTS'] = False

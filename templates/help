@@ -1,0 +1,10 @@
+<speak>
+    I have sent some sample commands in your alexa app.
+    <break time="200ms"/>
+    To begin, you can say
+    <break time="100ms"/>
+    Check {{agency}} for {{route}} at stop
+    <say-as interpret-as="digits">{{stop}}</say-as>.
+    <break time="250ms"/>
+    For even more commands, check the alexa app for the {{city}}Transit skill page.
+</speak>

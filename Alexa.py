@@ -2,13 +2,12 @@ import json
 import logging as log
 import re
 
+from transithelper.Constants import city_constants
 from flask import render_template
 from flask_ask import question, statement
-
-from Constants import city_constants
-from intents import CheckIntent
-from intents import GetIntent
-from intents import SetIntent
+from transithelper.intents import CheckIntent
+from transithelper.intents import GetIntent
+from transithelper.intents import SetIntent
 
 FULL_NAME = 'full_name'
 CITY = 'city'
